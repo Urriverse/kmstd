@@ -14,6 +14,6 @@ pub mod log;
 #[macro_export]
 macro_rules! meta {
     ($n:expr) => {
-        pub macro mod_ident(){$x}
+        pub macro mod_ident(){$n}
     };
 }
