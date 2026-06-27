@@ -4,4 +4,5 @@
 
 pub mod entry;
 pub mod panic;
+pub mod gall;
 pub mod kst;
