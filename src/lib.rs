@@ -9,8 +9,6 @@ pub mod systab;
 pub mod ga;
 pub mod ph;
 pub mod log;
-pub mod entry;
-pub use entry::entry;
 
 SYMBOL! { pub SYSTAB: systab::KeSysTabPtr = systab::KeSysTabPtr(core::ptr::null()); }
 
@@ -18,3 +16,8 @@ SYMBOL! { pub SYSTAB: systab::KeSysTabPtr = systab::KeSysTabPtr(core::ptr::null(
 #[cfg(debug_assertions)] pub macro KeInvoke($n:ident: $($arg:expr),*) { ( unsafe { SYSTAB.0.as_ref().expect("KMI fatal error") }.$n )( $($arg),* ) }
 
 pub macro exit { () => { systab::exit(0) }, ($code:expr) => { systab::exit($code) }, }
+
+pub macro panic_handler()
+{
+    #[panic_handler] fn ___km_ph(x: &core::panic::PanicInfo) -> ! { ph::k_panic(x) }
+}
