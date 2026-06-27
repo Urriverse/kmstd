@@ -34,25 +34,25 @@ impl AttLvl {
 }
 
 pub macro trace($($arg:tt)+) {
-    crate::sym::k_log(AttLvl::Trace, concat!(crate::mod_ident!(), "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
+    crate::sym::k_log(AttLvl::Trace, concat!(env!("CARGO_PKG_NAME");, "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
 }
 
 pub macro debug($($arg:tt)+) {
-    crate::sym::k_log(AttLvl::Trace, concat!(crate::mod_ident!(), "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
+    crate::sym::k_log(AttLvl::Trace, concat!(env!("CARGO_PKG_NAME");, "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
 }
 
 pub macro info($($arg:tt)+) {
-    crate::sym::k_log(AttLvl::Trace, concat!(crate::mod_ident!(), "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
+    crate::sym::k_log(AttLvl::Trace, concat!(env!("CARGO_PKG_NAME");, "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
 }
 
 pub macro warn($($arg:tt)+) {
-    crate::sym::k_log(AttLvl::Trace, concat!(crate::mod_ident!(), "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
+    crate::sym::k_log(AttLvl::Trace, concat!(env!("CARGO_PKG_NAME");, "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
 }
 
 pub macro error($($arg:tt)+) {
-    crate::sym::k_log(AttLvl::Trace, concat!(crate::mod_ident!(), "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
+    crate::sym::k_log(AttLvl::Trace, concat!(env!("CARGO_PKG_NAME");, "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
 }
 
 pub macro panic_msg($($arg:tt)+) {
-    crate::sym::k_log(AttLvl::Trace, concat!(crate::mod_ident!(), "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
+    crate::sym::k_log(AttLvl::Trace, concat!(env!("CARGO_PKG_NAME");, "::", module_path!()), file!(), line!(), &format_args!($($arg)+));
 }
