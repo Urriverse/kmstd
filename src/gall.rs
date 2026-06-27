@@ -12,6 +12,3 @@ unsafe impl GlobalAlloc for Gall {
         //
     }
 }
-
-#[global_allocator]
-pub static GALL: Gall = Gall;
