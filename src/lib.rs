@@ -5,6 +5,7 @@ pub mod systab;
 pub mod ga;
 pub mod ph;
 
-#[unsafe(no_mangle)] pub static SYSTAB: systab::KeSysTabPtr = systab::KeSysTabPtr(core::ptr::null());
+#[used] #[unsafe(no_mangle)] pub static SYSTAB: systab::KeSysTabPtr = systab::KeSysTabPtr(core::ptr::null());
+
 #[cfg(not(debug_assertions))] pub macro KeInvoke($n:ident: $($arg:expr),*) { ( unsafe { SYSTAB.0.as_ref_unchecked() }.$n )( $($arg),* ) }
 #[cfg(debug_assertions)] pub macro KeInvoke($n:ident: $($arg:expr),*) { ( unsafe { SYSTAB.0.as_ref().expect("KMI fatal error") }.$n )( $($arg),* ) }
