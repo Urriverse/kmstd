@@ -1,14 +1,9 @@
 #![no_std]
 #![feature(decl_macro)]
 
-#[allow(unused)] #[macro_use] pub extern crate alloc;
+pub mod systab;
 
-pub mod entry;
-pub mod panic;
-pub mod gall;
-pub mod kst;
-
-pub macro allocator() {
-    #[global_allocator]
-    pub static GALL: $crate::gall::Gall = $crate::gall::Gall;
+pub macro meta() {
+    #[unsafe(no_mangle)]
+    pub static SYSTAB: $crate::systab::KeSysTabPtr = $crate::systab::KeSysTabPtr(core::ptr::null());
 }

@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "nanokit"
+name = "nk"
 version = "0.1.0"
