@@ -9,3 +9,4 @@ pub mod macros;
 pub mod ga;
 
 pub use macros::*;
+pub use util::meta;
