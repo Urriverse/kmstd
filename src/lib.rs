@@ -4,6 +4,7 @@
 pub mod systab;
 pub mod ga;
 pub mod ph;
+pub mod log;
 
 #[used] #[unsafe(no_mangle)] pub static SYSTAB: systab::KeSysTabPtr = systab::KeSysTabPtr(core::ptr::null());
 
