@@ -7,6 +7,7 @@ pub mod sym;
 pub mod stub;
 pub mod macros;
 pub mod ga;
+pub mod elf;
 
 pub use macros::*;
 pub use util::*;

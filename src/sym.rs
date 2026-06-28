@@ -1,4 +1,5 @@
-use crate::{stub, log::AttLvl};
+use crate::stub;
+use ketypes::mon::lvl::AttLvl;
 use core::fmt::Arguments;
 
 crate::util::SYMBOL! {

@@ -18,6 +18,6 @@ pub fn free(_: *mut u8, _: core::alloc::Layout) {
     /* nothing */
 }
 
-pub fn log(_: crate::log::AttLvl, _: &'static str, _: &'static str, _: u32, _: core::fmt::Arguments<'_>) {
+pub fn log(_: ketypes::mon::lvl::AttLvl, _: &'static str, _: &'static str, _: u32, _: core::fmt::Arguments<'_>) {
     /* nothing */
 }

@@ -3,5 +3,29 @@
 version = 4
 
 [[package]]
+name = "bitflags"
+version = "2.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4388bee8683e3d04af747c73422af53102d2bd24d9eadb6cbc100baef4b43f8"
+
+[[package]]
+name = "extrum"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37eb048fb996ff4a7450fa8cfe253456c03a2f0cf9e5f01fc5617f7d3105ae15"
+
+[[package]]
+name = "ketypes"
+version = "0.1.0"
+source = "git+https://github.com/Urriverse/ketypes.git?branch=main#9667783abf7a799bc36408deab90975884b6757a"
+dependencies = [
+ "bitflags",
+ "extrum",
+]
+
+[[package]]
 name = "nk"
 version = "0.1.0"
+dependencies = [
+ "ketypes",
+]
