@@ -7,9 +7,9 @@ pub macro panic_handler() {
 
 pub macro exit {
     () => {
-        crate::keExecExit(0)
+        crate::KeExecExit(0)
     },
     ($code:expr) => {
-        crate::keExecExit($code)
+        crate::KeExecExit($code)
     },
 }
