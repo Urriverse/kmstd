@@ -2,6 +2,8 @@ use crate::*; use ketypes::*;
 
 Ke!
 {
+    KeVtDeviceNew           or  |_| None
+
     KeDeviceAddMethod       or  |_,_,_| ()
 
     KeDeviceGetMethod       or  |_,_|   None
