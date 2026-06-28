@@ -17,7 +17,7 @@ checksum = "37eb048fb996ff4a7450fa8cfe253456c03a2f0cf9e5f01fc5617f7d3105ae15"
 [[package]]
 name = "ketypes"
 version = "0.1.0"
-source = "git+https://github.com/Urriverse/ketypes.git?branch=main#9667783abf7a799bc36408deab90975884b6757a"
+source = "git+https://github.com/Urriverse/ketypes.git?branch=main#8fca54a07206f1734f5408515d1d9cc60549d55c"
 dependencies = [
  "bitflags",
  "extrum",
