@@ -31,4 +31,6 @@ Ke!
     KeFsMetaBlockRegister   or  |_|         0
 
     KeFsMount               or  |_,_|       None
+
+    KeFsCurrentRoot         or  ||          "".to_string()
 }

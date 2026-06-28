@@ -8,6 +8,7 @@ pub mod util;
 pub mod sym;
 pub mod macros;
 pub mod ga;
+pub mod fs;
 
 pub use macros::*;
 pub use util::*;
