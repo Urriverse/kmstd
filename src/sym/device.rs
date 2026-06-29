@@ -2,7 +2,7 @@ use crate::*; use ketypes::*;
 
 Ke!
 {
-    KeVtDeviceNew           or  |_| None
+    KeVtDeviceNew           or  |_| { error!("KeVtDeviceNew not provided"); None}
 
     KeDeviceAddMethod       or  |_,_,_| ()
 
