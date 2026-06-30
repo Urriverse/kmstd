@@ -1,15 +1,15 @@
 pub macro panic_handler() {
     #[panic_handler]
     fn ___km_ph(x: &core::panic::PanicInfo) -> ! {
-        crate::sym::KeExecPanic(x)
+        crate::ExecPanic(x)
     }
 }
 
 pub macro exit {
     () => {
-        crate::KeExecExit(0)
+        crate::ExecExit(0)
     },
     ($code:expr) => {
-        crate::KeExecExit($code)
+        crate::ExecExit($code)
     },
 }
