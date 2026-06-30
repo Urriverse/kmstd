@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KeMemAlloc              or  |_|     { error!("KeMemAlloc not provided"); 0 as _}
 

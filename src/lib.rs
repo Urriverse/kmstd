@@ -2,6 +2,7 @@
 #![feature(decl_macro)]
 
 extern crate alloc;
+#[macro_use] extern crate apaque;
 
 pub mod log;
 pub mod util;
@@ -9,6 +10,7 @@ pub mod sym;
 pub mod macros;
 pub mod ga;
 pub mod fs;
+pub mod front;
 
 pub use macros::*;
 pub use util::*;

@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KeEventSubscribe    or |_,_|    Err(())
 

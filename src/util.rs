@@ -25,7 +25,7 @@ pub macro entry( $($b:tt)* ) {
     }
 }
 
-pub macro Ke( $( $x:ident or $d:expr )+ ) {
+pub macro Ku( $( $x:ident or $d:expr )+ ) {
     SYMBOL! {
         $(
             pub $x: $x = $d;

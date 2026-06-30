@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KeModuleLoad            or  |_| Err("function not provided".to_string())
 

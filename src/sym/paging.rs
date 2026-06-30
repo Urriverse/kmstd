@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KePagingMap             or  |_,_,_,_|   Err("function not provided")
 

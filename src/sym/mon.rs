@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KeMonLog                or  |_,_,_,_,_| ()
 

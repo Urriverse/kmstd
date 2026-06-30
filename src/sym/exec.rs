@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KeExecPanic             or   |_|            { error!("KeExecPanic not provided"); loop{core::hint::spin_loop()} }
 

@@ -1,6 +1,6 @@
 use crate::*; use ketypes::*;
 
-Ke!
+Ku!
 {
     KeVtDeviceNew           or  |_|     { error!("KeVtDeviceNew not provided"); None}
 
