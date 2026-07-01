@@ -14,11 +14,11 @@ Import! {
     }
 }
 
-Import! {
-    pub fn ExecYield() where kernel 0.0 {
-        error!("ExecYield not provided");
-    }
-}
+// Import! {
+//     pub fn ExecYield() where kernel 0.0 {
+//         error!("ExecYield not provided");
+//     }
+// }
 
 Import! {
     pub fn ExecSleep() where kernel 0.0 {
