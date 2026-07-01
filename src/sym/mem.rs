@@ -4,7 +4,7 @@ Import! {
     pub fn MemAlloc(layout: core::alloc::Layout) -> *mut u8 where kernel 0.0 {
         let _ = layout;
         error!("MemAlloc not provided");
-        0 as _
+        return 0 as _;
     }
 }
 
