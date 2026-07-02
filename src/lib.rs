@@ -2,6 +2,7 @@
 #![feature(decl_macro)]
 
 extern crate alloc;
+#[macro_use] extern crate ketypes;
 
 pub mod log;
 pub mod util;
