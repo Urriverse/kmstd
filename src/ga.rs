@@ -1,4 +1,4 @@
-use crate::sym::*;
+use crate::*;
 
 struct __GA;
 

@@ -20,16 +20,16 @@ extrum::extrum! {
 
 pub type MethodId = u64;
 pub type DeviceMethod = extern "C" fn(DeviceId, usize) -> DeviceResult;
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(C)]
-pub struct DeviceId(u32);
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(C)]
-pub struct DeviceResult {
-    /// The return value of the method (semantics depend on the method).
-    pub value: usize,
-    /// The status code indicating success or error.
-    pub status: DeviceStatus,
+#[derive(Debug, Clone, Copy, PartialEq, Eq)] #[repr(C)] pub struct DeviceId(u32);
+#[derive(Debug, Clone, Copy, PartialEq, Eq)] #[repr(C)] pub struct DeviceResult { pub value: usize, pub status: DeviceStatus }
+
+impl DeviceId {
+    #[inline(always)]
+    pub fn invoke(self, mid: MethodId, arg: usize) -> Result<usize, DeviceStatus> { DeviceInvoke(self, mid, arg).as_result() }
+
+    #[inline(always)] pub fn get(self) -> Option<usize> { DeviceGetData(self) }
+    #[inline(always)] pub fn set(self, data: usize) -> Result<(), ()> { if DeviceSetData(self, data) { Ok(()) } else { Err(()) } }
+    #[inline(always)] pub fn remove(self) -> Option<Box<Device>> { DeviceRemove(self) }
 }
 
 impl DeviceResult {
@@ -71,10 +71,6 @@ impl DeviceResult {
     }
 }
 
-Import! { fn VtDeviceNew(name: &str) -> Option<Box<Device>> where kernel 0.1 }
-
-Import! { pub fn VtDeviceAddMethod(this: &mut Box<Device>, method_id: MethodId, method: DeviceMethod) where kernel 0.1 }
-
 impl Device {
     #[inline(always)]
     pub fn new(name: &str) -> Option<Box<Self>> {
@@ -85,4 +81,27 @@ impl Device {
     pub fn add_method(this: &mut Box<Device>, method_id: MethodId, method: DeviceMethod) {
         VtDeviceAddMethod(this, method_id, method)
     }
+
+    #[inline(always)]
+    pub fn get_method(this: &Box<Device>, method_id: MethodId) -> Option<DeviceMethod> {
+        VtDeviceGetMethod(this, method_id)
+    }
+}
+
+Import! {
+    pub fn DeviceRegister(device: Box<Device>) -> Option<DeviceId> where kernel 0.1;
+
+    pub fn VtDeviceNew(name: &str) -> Option<Box<Device>> where kernel 0.1;
+
+    pub fn VtDeviceAddMethod(this: &mut Box<Device>, method_id: MethodId, method: DeviceMethod) where kernel 0.1;
+
+    pub fn VtDeviceGetMethod(this: &Box<Device>, method_id: MethodId) -> Option<DeviceMethod> where kernel 0.1;
+
+    pub fn DeviceRemove(id: DeviceId) -> Option<Box<Device>> where kernel 0.1;
+
+    pub fn DeviceSetData(id: DeviceId, data: usize) -> bool where kernel 0.1;
+
+    pub fn DeviceGetData(id: DeviceId) -> Option<usize> where kernel 0.1;
+
+    pub fn DeviceInvoke(id: DeviceId, mid: MethodId, arg: usize) -> DeviceResult where kernel 0.1;
 }

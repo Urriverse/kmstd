@@ -7,3 +7,4 @@ edition = "2024"
 ketypes = { git = "https://github.com/Urriverse/ketypes", branch = "main" }
 apaque = { git = "https://github.com/vi-is-ramen/apaque", branch = "main", default-features = false }
 extrum = { version = "0.1.3", features = ["no_std"] }
+bitflags = "2.13.0"
