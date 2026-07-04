@@ -114,7 +114,7 @@ pub enum DeliveryMode {
 bitflags::bitflags! {
     #[repr(transparent)]
     #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-    pub struct KeEntryFlags: u64 {
+    pub struct EntryFlags: u64 {
         /// The page is present in memory.
         const PRESENT         = 1 <<  0;
         /// The page is writable (for kernel mode, or user if `USER_ACCESSIBLE`).

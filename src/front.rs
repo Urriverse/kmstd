@@ -6,3 +6,4 @@ mod sync    ; pub use sync  ::*;
 mod event   ; pub use event ::*;
 mod vfs     ; pub use vfs   ::*;
 mod sched   ; pub use sched ::*;
+mod vm      ; pub use vm    ::*;
