@@ -48,48 +48,6 @@ pub struct TrapFrame {
     pub ss: u64,
 }
 
-/// Returns RDPID value. Intentionally private.
-#[doc(hidden)]
-#[inline(always)]
-fn rdpid_raw() -> usize {
-    let id: u64;
-    unsafe {
-        core::arch::asm! {
-            "rdpid {}",
-            out(reg) id,
-            options(nostack, preserves_flags),
-        }
-    }
-    id as usize
-}
-
-/// Reads Machine-Specific Register and returns its value.
-/// Intentionally private.
-#[inline]
-unsafe fn rdmsr(msr: u32) -> u64 {
-    let (lo, hi): (u32, u32);
-    unsafe {
-        core::arch::asm!(
-            "rdmsr",
-            in("ecx") msr,
-            out("eax") lo,
-            out("edx") hi,
-            options(nostack, preserves_flags),
-        );
-    }
-    ((hi as u64) << 32) | (lo as u64)
-}
-
-/// Returns current CPU unique identifier.
-#[inline(always)] #[allow(non_snake_case)]
-pub fn CurrentCpu() -> usize {
-    if ArchRdpidAvailable() {
-        rdpid_raw()
-    } else {
-        unsafe { rdmsr(3221225731) as usize }
-    }
-}
-
 /// Delivery modes for IPIs.
 ///
 /// These are the bits that are OR‑ed into the ICR (Interrupt Command Register)
@@ -143,6 +101,75 @@ bitflags::bitflags! {
         const FILE_MAPPED     = 1 << 53;
         /// Swapped flag (page is swapped out).
         const SWAPPED         = 1 << 54;
+    }
+}
+
+#[doc(hidden)]
+#[inline(always)]
+fn rdpid_raw() -> usize {
+    let id: u64;
+    unsafe {
+        core::arch::asm! {
+            "rdpid {}",
+            out(reg) id,
+            options(nostack, preserves_flags),
+        }
+    }
+    id as usize
+}
+
+#[inline(always)]
+fn rdmsr(msr: u32) -> u64 {
+    let (lo, hi): (u32, u32);
+    unsafe {
+        core::arch::asm!(
+            "rdmsr",
+            in("ecx") msr,
+            out("eax") lo,
+            out("edx") hi,
+            options(nostack, preserves_flags),
+        );
+    }
+    ((hi as u64) << 32) | (lo as u64)
+}
+
+#[inline(always)]fn   in8(port: u16) ->  u8  { unsafe { let rv:  u8; core::arch::asm! { "in {}, {:x}"  , out(reg_byte) rv, in(reg) port }; rv } }
+#[inline(always)]fn  in16(port: u16) -> u16  { unsafe { let rv: u16; core::arch::asm! { "in {:x}, {:x}", out(reg)      rv, in(reg) port }; rv } }
+#[inline(always)]fn  in32(port: u16) -> u32  { unsafe { let rv: u32; core::arch::asm! { "in {:l}, {:x}", out(reg)      rv, in(reg) port }; rv } }
+
+#[inline(always)]fn  out8(port: u16, v:  u8) { unsafe { core::arch::asm! { "in {:x}, {}"  , in(reg) port, in(reg_byte) v } } }
+#[inline(always)]fn out16(port: u16, v: u16) { unsafe { core::arch::asm! { "in {:x}, {:x}", in(reg) port, in(reg)      v } } }
+#[inline(always)]fn out32(port: u16, v: u32) { unsafe { core::arch::asm! { "in {:x}, {:l}", in(reg) port, in(reg)      v } } }
+
+// Reads value from I/O port. `T` must be of size 1, 2, or 4 bytes.
+#[inline(always)]#[allow(non_snake_case)]
+pub unsafe fn PortRead<T: From<usize>>(port: u16) -> T {
+    match size_of::<T>() {
+        1 =>  in8(port) as usize,
+        2 => in16(port) as usize,
+        4 => in32(port) as usize,
+        _ => panic!("Invalid type"),
+    }.into()
+}
+
+// Writes value to I/O port. `T` must be of size 1, 2, or 4 bytes.
+#[inline(always)]#[allow(non_snake_case)]
+pub unsafe fn PortWrite<T: Into<usize>>(port: u16, v: T) {
+    match size_of::<T>() {
+        1 =>  out8(port, v.into() as  u8),
+        2 => out16(port, v.into() as u16),
+        4 => out32(port, v.into() as u32),
+        _ => panic!("Invalid type"),
+    }.into()
+}
+
+/// Returns current CPU unique identifier.
+#[inline(always)]#[allow(non_snake_case)]
+pub fn CurrentCpu() -> usize {
+    if ArchRdpidAvailable() {
+        rdpid_raw()
+    } else {
+        rdmsr(3221225731) as usize
     }
 }
 
