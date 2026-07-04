@@ -35,7 +35,43 @@ impl Vaddr {
     pub const unsafe fn to_mut_unchecked<'a, T>(self) -> &'a mut T { unsafe { self.to_ptr_mut::<T>().as_mut_unchecked() } }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(usize)]
+pub enum Zone {
+    Dma = 0,
+    Dma32 = 1,
+    Normal = 2,
+}
+
+impl Zone {
+    pub const DMA_END: usize = 16 * 1024 * 1024;      // 16 MiB
+    pub const DMA32_END: usize = 4 * 1024 * 1024 * 1024; // 4 GiB
+
+    #[inline]
+    pub fn from_pfn(pfn: usize) -> Self {
+        let paddr = pfn * 4096;
+        if paddr < Self::DMA_END {
+            Zone::Dma
+        } else if paddr < Self::DMA32_END {
+            Zone::Dma32
+        } else {
+            Zone::Normal
+        }
+    }
+
+    #[inline]
+    pub const fn index(self) -> usize {
+        match self {
+            Zone::Dma => 0,
+            Zone::Dma32 => 1,
+            Zone::Normal => 2,
+        }
+    }
+}
+
 Import! {
     pub fn MemAlloc(layout: core::alloc::Layout) -> *mut u8 where kernel 0.1;
     pub fn MemFree(ptr: *mut u8, layout: core::alloc::Layout) where kernel 0.1;
+    pub fn MemAllocDMA(zone: Zone, count: usize) -> Paddr where kernel 0.1;
+    pub fn MemFreeDMA(paddr: Paddr) where kernel 0.1;
 }

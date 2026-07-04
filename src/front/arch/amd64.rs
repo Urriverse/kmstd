@@ -104,6 +104,25 @@ bitflags::bitflags! {
     }
 }
 
+/// This type represents interrupt vector. use first field as a vector (`v.0`).
+/// 
+/// Note: don't drop [`Vector`] 'til you set your ISR, otherwise other module
+/// can grab your ISR instead of you. Drop Vector only when your ISR already set.
+/// 
+/// Note: you MUST drop [`Vector`] after use as all tasks which wanna allocate
+/// new vector are waiting 'til you hold the [`Vector`].
+#[repr(C)] pub struct Vector(pub u8, usize);
+
+bitflags::bitflags! {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    pub struct GsiRouteBits: u32 {
+        const ACTIVE_LOW = 1 << 13;
+        const LEVEL_TRIG = 1 << 15;
+    }
+}
+
+impl Drop for Vector { fn drop(&mut self) { ReleaseVector(self); } }
+
 #[doc(hidden)]
 #[inline(always)]
 fn rdpid_raw() -> usize {
@@ -179,10 +198,10 @@ Import! {
     pub fn ArchReplaceSyscallHandler as OnSystemCall(sh: fn(&mut TrapFrame)) -> Option<()> where kernel 0.1;
 
     /// Returns current uptime in milliseconds
-    fn ArchTimeFromBootNs as UptimeNs() -> u64 where kernel 0.1;
+    pub fn ArchTimeFromBootNs as UptimeNs() -> u64 where kernel 0.1;
 
     /// Returns current uptime in seconds
-    fn ArchTimeFromBoot as Uptime() -> f64 where kernel 0.1;
+    pub fn ArchTimeFromBoot as Uptime() -> f64 where kernel 0.1;
 
     /// Returns amount of CPUs detected by kernel/bootloader.
     pub fn GtArchTotalCpus as TotalCpus() -> usize where kernel 0.1;
@@ -193,7 +212,20 @@ Import! {
     /// Sends the IPI to the target APIC ID.
     pub fn ArchSendIPI as SendIPI(target_cpu_id: u32, event_vector: u8, mode: DeliveryMode) where kernel 0.1;
 
-    /// Checks if RDPID available. Used in [`currect_cpu`]. Intentionally private.
     #[doc(hidden)]
     fn ArchRdpidAvailable as ArchRdpidAvailable() -> bool where kernel 0.1;
+
+    /// Sets ISR on all CPUs.
+    pub fn ArchSetInterruptServiceRoutine as SetISR(vector: u8, routine: *const ()) where kernel 0.1;
+
+    /// Removes ISR on all CPUs. Other modules/tasks can use this vector again.
+    pub fn ArchRemoveInterruptServiceRoutine as RemoveISR(vector: u8) where kernel 0.1;
+
+    /// Configures GSI route.
+    pub fn ArchRouteGsi as RouteGsi(gsi: u32, cpuid: usize, mask: bool, vector: u8, bits: GsiRouteBits) -> Result<(), ()> where kernel 0.1;
+
+    /// Allocates new vector for your ISR.
+    pub fn ArchAllocateVector as AllocateVector() -> Option<Vector> where kernel 0.1;
+
+    fn ArchReleaseVector as ReleaseVector(v: &mut Vector) where kernel 0.1;
 }
