@@ -1,4 +1,4 @@
-# kmstd - experimental nanokit
+# kstd - experimental nanokit
 
 ## License
 

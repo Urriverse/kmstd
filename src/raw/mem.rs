@@ -1,3 +1,9 @@
+//! Raw memory management and physical/virtual address abstractions.
+//!
+//! This module defines strong types for physical ([`Paddr`]) and virtual ([`Vaddr`])
+//! addresses, memory zones ([`Zone`]), and provides raw bindings for kernel
+//! memory allocation, deallocation, and DMA buffer management.
+
 pub type Swapper = *const fn(pfn: usize) -> Result<(), ()>;
 
 #[derive(Clone, Copy, Debug)] #[repr(transparent)] pub struct Paddr(usize);

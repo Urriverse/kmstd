@@ -1,3 +1,9 @@
+//! Raw bindings for the Global Uniform Map.
+//!
+//! This module provides direct access to the underlying GUM data system operations,
+//! such as reading, writing, resolving paths, and manipulating nodes without
+//! the overhead of the higher-level VFS meta-block abstraction.
+
 use super::*;
 use alloc::string::String;
 

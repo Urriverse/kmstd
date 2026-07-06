@@ -1,3 +1,8 @@
+//! Dynamic module loading and execution.
+//!
+//! This module provides raw bindings for loading binary modules into memory,
+//! linking them, and spawning them as new tasks.
+
 use alloc::string::String;
 
 use super::*;

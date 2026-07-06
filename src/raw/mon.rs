@@ -1,3 +1,8 @@
+//! Kernel monitoring and logging subsystem.
+//!
+//! This module defines the logging severity levels ([`AttLvl`]), log sink traits,
+//! and raw bindings to emit log messages to the kernel's monitoring console.
+
 pub enum Format {
     Pretty,
     Regular,

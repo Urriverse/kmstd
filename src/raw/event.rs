@@ -1,3 +1,8 @@
+//! Kernel event subscription and publishing interface.
+//!
+//! This module provides raw bindings for the kernel's event system, allowing
+//! tasks to subscribe to, unsubscribe from, and publish system-wide events.
+
 pub type EventId = u64;
 pub type EventCallback = fn(EventId, usize);
 

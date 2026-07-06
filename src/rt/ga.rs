@@ -1,3 +1,9 @@
+//! Global allocator implementation.
+//!
+//! This module implements the [`core::alloc::GlobalAlloc`] trait, bridging Rust's
+//! heap allocation requests (`alloc::vec!`, `Box`, etc.) to the kernel's raw
+//! memory allocation system calls.
+
 use crate::*;
 
 struct __GA;

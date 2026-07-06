@@ -1,3 +1,10 @@
+//! Virtual File System (VFS) abstractions and raw bindings.
+//!
+//! This module defines the core VFS data structures, including inodes ([`Inode`]),
+//! file types ([`Kind`]), permissions ([`InodeFlags`]), and the [`FileSystem`] trait
+//! for implementing custom file systems. It also provides raw system calls for
+//! VFS operations and meta-block management.
+
 use core::io::ErrorKind;
 
 use alloc::string::String;

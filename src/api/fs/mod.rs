@@ -1,3 +1,11 @@
+//! File system operations.
+//!
+//! This module provides a safe, high-level API for interacting with the file system,
+//! inspired by `std::fs`. It includes functions for reading, writing, and querying
+//! files and directories, as well as types representing file metadata and directory entries.
+
+#![status(incomplete)]
+
 use core::io::{Error, ErrorKind};
 use alloc::{format, string::ToString, sync::Arc, vec::Vec};
 pub use core::io::Result;

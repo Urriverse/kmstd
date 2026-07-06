@@ -1,3 +1,8 @@
+//! Virtual memory management and page table manipulation.
+//!
+//! This module provides raw bindings for mapping, unmapping, and remapping
+//! virtual memory regions, as well as querying page table entries.
+
 use super::*;
 
 Import! {

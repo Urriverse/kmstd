@@ -1,3 +1,9 @@
+//! AMD64 (x86_64) specific kernel interfaces and CPU primitives.
+//!
+//! This module defines the CPU state representation ([`TrapFrame`]), interrupt
+//! delivery modes, page table entry flags, and low-level I/O port and MSR
+//! accessors specific to the x86_64 architecture.
+
 /// A complete snapshot of the CPU state at the time of an interrupt, exception, or system call.
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]

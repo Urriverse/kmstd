@@ -7,3 +7,11 @@ edition = "2024"
 ketypes = { git = "https://github.com/Urriverse/ketypes", branch = "main" }
 extrum = { version = "0.1.3", features = ["no_std"] }
 bitflags = "2.13.0"
+proc = { path = "./proc" }
+
+[features]
+default = ["stable"]
+stable = []
+unstable = ["stable"]
+experimental = ["unstable"]
+incomplete = ["experimental"]

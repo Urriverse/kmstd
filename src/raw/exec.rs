@@ -1,3 +1,9 @@
+//! Task and process execution control.
+//!
+//! This module provides raw bindings for task lifecycle management, including
+//! spawning new tasks (from closures or function pointers), yielding the CPU,
+//! sleeping, waiting, and terminating execution.
+
 use alloc::{boxed::Box, string::String};
 
 #[repr(transparent)] pub struct WaitQueue(&'static());
