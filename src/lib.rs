@@ -1,29 +1,12 @@
-#![no_std]
-#![feature(decl_macro)]
-#![feature(core_io)]
-#![feature(string_from_utf8_lossy_owned)]
+// It's okay, it's okay, it's okay...
+#![no_std]#![allow(internal_features)]#![feature(decl_macro,
+core_io,string_from_utf8_lossy_owned,prelude_import)]#![allow
+(unused_features)]#[allow(unused)]#[macro_use]extern crate alloc
+;#[allow(unused)]#[macro_use]extern crate ketypes as ke;#[
+macro_export]macro_rules!pre{()=>{#[macro_use]extern crate kstd;
+#[allow(unused_imports)]#[prelude_import]use kstd::pre::*;};}pub
+mod pre;#[allow(unused_imports)]#[prelude_import]pub use pre::*;
 
-extern crate alloc;
-#[macro_use] extern crate ketypes;
-
-pub mod util;
-pub mod macros;
-pub mod raw;
-pub mod rt;
-pub mod sugar;
-pub mod pre;
-
-pub use macros::*;
-
-pub use sugar::*;
-
-pub use pre::*;
-
-#[macro_export]
-macro_rules! pre {
-    () => {
-        #[macro_use] extern crate kstd;
-        #[prelude_import]
-        use kstd::pre::*;
-    };
-}
+pub mod raw     ;
+pub mod rt      ;
+pub mod api     ;

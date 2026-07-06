@@ -3,6 +3,7 @@
 pub use core::prelude::v1::*;
 pub use alloc::{format, vec, vec::Vec, collections::*};
 pub use crate::raw::sync;
+pub use crate::api as std;  // why not
 
 macro m() {
     concat!(
