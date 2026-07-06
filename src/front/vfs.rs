@@ -1,9 +1,10 @@
 use alloc::string::String;
 use alloc::sync::Arc;
+use crate::*;
 
 #[repr(usize)]
 #[derive(Debug)]
-pub enum KeFsError {
+pub enum FsError {
     Unknown         = 0,
     NotAFile        = 1,
     OutOfBounds     = 2,
@@ -45,7 +46,7 @@ impl KeInodeFlags {
 
 #[repr(C, align(8))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct KeInodeId(pub u32, pub u32); // (inode number, metablock id)
+pub struct InodeId(pub u32, pub u32); // (inode number, metablock id)
 
 #[repr(u16)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,8 +61,8 @@ pub enum Kind {
 
 #[repr(C, align(128))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct KeInode {
-    pub id      : KeInodeId   ,
+pub struct Inode {
+    pub id      : InodeId   ,
     pub kind    : Kind      ,
     pub flags   : KeInodeFlags     ,
     pub size    : u64       ,
@@ -74,10 +75,10 @@ pub struct KeInode {
     pub private : [u8; 34]  ,
 }
 
-impl Default for KeInode {
+impl Default for Inode {
     fn default() -> Self {
         Self {
-            id      : KeInodeId(0, 0)     ,
+            id      : InodeId(0, 0)     ,
             kind    : Kind::Unknown     ,
             flags   : KeInodeFlags::from_raw(0),
             size    : 0                 ,
@@ -92,10 +93,10 @@ impl Default for KeInode {
     }
 }
 
-impl KeInode {
+impl Inode {
     pub const fn new() -> Self {
         Self {
-            id      : KeInodeId(0, 0)     ,
+            id      : InodeId(0, 0)     ,
             kind    : Kind::Unknown     ,
             flags   : KeInodeFlags::from_raw(0),
             size    : 0                 ,
@@ -110,80 +111,121 @@ impl KeInode {
     }
 }
 
-pub trait KeFileSystem: Send + Sync {
+pub trait FileSystem: Send + Sync {
     fn lookup(
         &self   ,
-        dir     : KeInodeId,
+        dir     : InodeId,
         name    : &str
-    )   ->      Option<KeInodeId>
+    )   ->      Option<InodeId>
     ;
     fn readdir(
         &self   ,
-        dir     : KeInodeId,
+        dir     : InodeId,
         offset  : usize
-    )   ->      Option<(String, KeInodeId)>
+    )   ->      Option<(String, InodeId)>
     ;
     fn read(
         &self   ,
-        file    : KeInodeId,
+        file    : InodeId,
         offset  : usize,
         buf     : &mut [u8]
-    )   ->      Result<usize, KeFsError>
+    )   ->      Result<usize, FsError>
     ;
     fn write(
         &self   ,
-        file    : KeInodeId,
+        file    : InodeId,
         offset  : usize,
         buf     : &[u8]
-    )   ->      Result<usize, KeFsError>
+    )   ->      Result<usize, FsError>
     ;
     fn truncate(
         &self   ,
-        file    : KeInodeId,
+        file    : InodeId,
         new_size: usize
-    )   ->      Result<(), KeFsError>
+    )   ->      Result<(), FsError>
     ;
     fn unlink(
         &self   ,
-        dir     : KeInodeId,
+        dir     : InodeId,
         name    : &str
-    )   ->      Result<(), KeFsError>
+    )   ->      Result<(), FsError>
     ;
     fn link(
         &self   ,
-        parent  : KeInodeId,
+        parent  : InodeId,
         name    : &str,
-        child   : KeInodeId
-    )   ->      Result<(), KeFsError>
+        child   : InodeId
+    )   ->      Result<(), FsError>
     ;
     fn new(
         &self   ,
         mb_id   : u32,
-        inode   : KeInode,
+        inode   : Inode,
         kind    : Kind
-    )   ->      Result<KeInodeId, KeFsError>
+    )   ->      Result<InodeId, FsError>
     ;
     fn stat(
         &self   ,
-        inode   : KeInodeId
-    )   ->      Option<KeInode>
+        inode   : InodeId
+    )   ->      Option<Inode>
     ;
     fn set_mb_id(
         &self   ,
         mb_id   : u32
     )
     ;
+    fn probe_blkdev(
+        &self   ,
+        device  : DeviceId
+    )   ->      bool
+    {   let _   =
+        device  ;
+        false   }
 }
 
-pub type KeMetaBlockId = u32;
+pub type MetaBlockId = u32;
 
-pub struct KeMetaBlock {
-    pub id: KeMetaBlockId,
-    pub fs: Arc<dyn KeFileSystem>,
+pub struct MetaBlock {
+    pub id: MetaBlockId,
+    pub fs: Arc<dyn FileSystem>,
 }
 
-impl KeMetaBlock {
-    pub const fn new(id: KeMetaBlockId, fs: Arc<dyn KeFileSystem>) -> Self {
-        KeMetaBlock { id, fs }
+impl MetaBlock {
+    pub const fn new(id: MetaBlockId, fs: Arc<dyn FileSystem>) -> Self {
+        MetaBlock { id, fs }
     }
+}
+
+Import! {
+    pub fn FsLookup(mb: &MetaBlock, dir: InodeId, name: &str) -> Option<InodeId> where kernel 0.1;
+
+    pub fn FsReaddir(mb: &MetaBlock, dir: InodeId, offset: usize) -> Option<(String, InodeId)> where kernel 0.1;
+
+    pub fn FsRead(mb: &MetaBlock, file: InodeId, offset: usize, buf: &mut [u8]) -> Result<usize, FsError> where kernel 0.1;
+
+    pub fn FsWrite(mb: &MetaBlock, file: InodeId, offset: usize, buf: &[u8]) -> Result<usize, FsError> where kernel 0.1;
+
+    pub fn FsTrunc(mb: &MetaBlock, file: InodeId, new_size: usize) -> Result<(), FsError> where kernel 0.1;
+
+    pub fn FsUnlink(mb: &MetaBlock, dir: InodeId, name: &str) -> Result<(), FsError> where kernel 0.1;
+
+    pub fn FsLink(mb: &MetaBlock, parent: InodeId, name: &str, child: InodeId) -> Result<(), FsError> where kernel 0.1;
+
+    pub fn FsNew(mb: &MetaBlock, inode: Inode, kind: Kind) -> Result<InodeId, FsError> where kernel 0.1;
+
+    pub fn FsStat(mb: &MetaBlock, inode: InodeId) -> Option<Inode> where kernel 0.1;
+
+    pub fn FsIsMountPoint(id: InodeId) -> bool where kernel 0.1;
+
+    pub fn FsResolve(path: &str) -> Result<(InodeId, Arc<MetaBlock>), FsError> where kernel 0.1;
+
+    pub fn FsRegMblock(fs: Arc<dyn FileSystem>) -> u32 where kernel 0.1;
+
+    pub fn FsGetMblock(id: u32) -> Option<Arc<MetaBlock>> where kernel 0.1;
+
+    pub fn FsListDir(mb: &MetaBlock, dir: InodeId) -> alloc::collections::btree_map::BTreeMap<String, InodeId> where kernel 0.1;
+
+    pub fn FsReadToString(mb: &MetaBlock, file: InodeId) -> Result<String, FsError> where kernel 0.1;
+
+    pub fn FsMount(name: String, mb: u32) -> Option<InodeId> where kernel 0.1;
 }

@@ -7,3 +7,5 @@ mod event   ; pub use event ::*;
 mod vfs     ; pub use vfs   ::*;
 mod exec    ; pub use exec  ::*;
 mod vm      ; pub use vm    ::*;
+mod module  ; pub use module::*;
+mod gum     ; pub use gum   ::*;
