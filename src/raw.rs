@@ -1,3 +1,11 @@
+pub macro SYMBOL( $( $v:vis $n:ident : $t:ty = $d:expr; )+ ) {
+    $(
+        #[used]
+        #[unsafe(no_mangle)]
+        $v static $n: $t = $d;
+    )*
+}
+
 pub mod arch    ; pub use arch  ::*;
 pub mod event   ; pub use event ::*;
 pub mod exec    ; pub use exec  ::*;
