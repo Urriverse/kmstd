@@ -176,7 +176,7 @@ pub trait FileSystem: Send + Sync {
     ;
     fn probe_blkdev(
         &self   ,
-        device  : DeviceId
+        device  : String
     )   ->      bool
     {   let _   =
         device  ;

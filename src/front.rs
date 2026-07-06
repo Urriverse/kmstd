@@ -1,11 +1,10 @@
-mod device  ; pub use device::*;
 mod arch    ; pub use arch  ::*;
-mod mon     ; pub use mon   ::*;
-mod mem     ; pub use mem   ::*;
-mod sync    ; pub use sync  ::*;
 mod event   ; pub use event ::*;
-mod vfs     ; pub use vfs   ::*;
 mod exec    ; pub use exec  ::*;
-mod vm      ; pub use vm    ::*;
-mod module  ; pub use module::*;
 mod gum     ; pub use gum   ::*;
+mod mem     ; pub use mem   ::*;
+mod module  ; pub use module::*;
+mod mon     ; pub use mon   ::*;
+mod sync    ; pub use sync  ::*;
+mod vfs     ; pub use vfs   ::*;
+mod vm      ; pub use vm    ::*;
