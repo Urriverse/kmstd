@@ -7,15 +7,7 @@ pub macro SYMBOL( $( $v:vis $n:ident : $t:ty = $d:expr; )+ ) {
 }
 
 pub macro entry( mod $n:literal ; $( $b:tt )* ) {
-    #[cfg(not(test))]
-    panic_handler!{}
+    SYMBOL! { pub MODNAME:&'static str=$n; }
     
-    SYMBOL! {
-        pub MODNAME:&'static str=$n;
-    }
-    
-    #[unsafe(no_mangle)]
-    pub extern "C" fn _start() {
-        $($b)*
-    }
+    #[unsafe(no_mangle)] pub extern "C" fn _start() { $($b)* }
 }
