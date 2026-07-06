@@ -26,7 +26,6 @@ pub use pre::*;
 #[macro_export]
 macro_rules! pre {
     () => {
-        #![feature(prelude_import)]
         #[macro_use] extern crate kstd;
         #[prelude_import]
         use kstd::pre::*;
