@@ -1,4 +1,4 @@
-use crate::*;
+use super::*;
 
 Import! {
     pub fn VmTryMap(va: Vaddr, pa: Paddr, size: usize, flags: EntryFlags) -> Result<(), &'static str> where kernel 0.1;

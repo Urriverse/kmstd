@@ -4,7 +4,7 @@ pub use core::io::Result;
 
 use alloc::{borrow::ToOwned, string::String};
 
-use crate::*;
+use crate::raw::*;
 
 pub type Path = String;
 
@@ -115,7 +115,7 @@ pub fn create_dir(path: &Path) -> Result<()> {
         )
     }
 
-    FsNew(&mb, stat, crate::Kind::Directory)
+    FsNew(&mb, stat, Kind::Directory)
     .   map_err(
         |e| Error::new(
             e.into(),

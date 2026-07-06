@@ -1,6 +1,6 @@
 use alloc::string::String;
 
-use crate::*;
+use super::*;
 
 #[repr(transparent)] #[derive(Clone, Copy)] pub struct Module(usize);
 

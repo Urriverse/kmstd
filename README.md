@@ -1,4 +1,4 @@
-# kmstd - nanokit alternative that implemented as Rust's std
+# kmstd - experimental nanokit
 
 ## License
 
