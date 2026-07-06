@@ -12,6 +12,7 @@ pub mod macros;
 pub mod ga;
 pub mod front;
 pub mod sugar;
+pub mod pre;
 
 pub use macros::*;
 pub use util::*;
@@ -19,3 +20,15 @@ pub use log::*;
 
 pub use front::*;
 pub use sugar::*;
+
+pub use pre::*;
+
+#[macro_export]
+macro_rules! pre {
+    () => {
+        #![feature(prelude_import)]
+        #[macro_use] extern crate kstd;
+        #[prelude_import]
+        use kstd::pre::*;
+    };
+}
