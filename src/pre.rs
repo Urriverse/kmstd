@@ -16,7 +16,7 @@ macro m() {
 
 macro log( $l:ident $($arg:tt)+ ) {
     crate::raw::MonLog(
-        crate::AttLvl::$l,
+        crate::raw::AttLvl::$l,
         m!(), file!(), line!(),
         format_args!($($arg)+)
     );
