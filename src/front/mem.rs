@@ -1,3 +1,5 @@
+pub type Swapper = *const fn(pfn: usize) -> Result<(), ()>;
+
 #[derive(Clone, Copy, Debug)] #[repr(transparent)] pub struct Paddr(usize);
 #[derive(Clone, Copy, Debug)] #[repr(transparent)] pub struct Vaddr(usize);
 
@@ -74,4 +76,6 @@ Import! {
     pub fn MemFree(ptr: *mut u8, layout: core::alloc::Layout) where kernel 0.1;
     pub fn MemAllocDMA(zone: Zone, count: usize) -> Paddr where kernel 0.1;
     pub fn MemFreeDMA(paddr: Paddr) where kernel 0.1;
+    pub fn MemSetSwapper(swapper: Swapper) where kernel 0.1;
+    pub fn MemGetSwapper() -> Swapper where kernel 0.1;
 }
