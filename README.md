@@ -1,4 +1,4 @@
-# nanokit - native kernel module interface for Kernel
+# kmstd - nanokit alternative that implemented as Rust's std
 
 ## License
 
