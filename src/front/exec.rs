@@ -54,4 +54,5 @@ Import! {
     pub fn ExecWakeup(wq: WaitQueue) where kernel 0.1;
     pub fn ExecWait(child_id: TaskId) -> i32 where kernel 0.1;
     pub fn ExecProcess() -> Option<ProcId> where kernel 0.1;
+    pub fn ExecPwd() -> Option<String> where kernel 0.1;
 }

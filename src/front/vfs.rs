@@ -1,9 +1,11 @@
+use core::io::ErrorKind;
+
 use alloc::string::String;
 use alloc::sync::Arc;
 use crate::*;
 
 #[repr(usize)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum FsError {
     Unknown         = 0,
     NotAFile        = 1,
@@ -17,9 +19,26 @@ pub enum FsError {
     NotEmpty        = 9,
 }
 
+impl Into<ErrorKind> for FsError {
+    fn into(self) -> ErrorKind {
+        match self {
+            FsError::Unknown => ErrorKind::Other,
+            FsError::NotAFile => ErrorKind::IsADirectory,
+            FsError::OutOfBounds => ErrorKind::InvalidInput,
+            FsError::NoEntry => ErrorKind::NotFound,
+            FsError::NotADirectory => ErrorKind::NotADirectory,
+            FsError::Found => ErrorKind::AlreadyExists,
+            FsError::AlreadyExists => ErrorKind::AlreadyExists,
+            FsError::InvalidPath => ErrorKind::InvalidFilename,
+            FsError::NotMounted => ErrorKind::NotConnected,
+            FsError::NotEmpty => ErrorKind::DirectoryNotEmpty,
+        }
+    }
+}
+
 extrum::extrum! {
     #[derive(Clone, Copy, PartialEq)]
-    pub enum KeInodeFlags: u64 {
+    pub enum InodeFlags: u64 {
         DIR         = 1 << 0    ,
         USER_READ   = 1 << 1    ,
         USER_WRITE  = 1 << 2    ,
@@ -36,7 +55,11 @@ extrum::extrum! {
     }
 }
 
-impl KeInodeFlags {
+impl core::ops::BitOr for InodeFlags { type Output = Self; fn bitor(self, rhs: Self) -> Self::Output { Self(self.0 | rhs.0) } }
+impl core::ops::BitAnd for InodeFlags { type Output = Self; fn bitand(self, rhs: Self) -> Self::Output { Self(self.0 & rhs.0) } }
+impl core::ops::Not for InodeFlags { type Output = Self; fn not(self) -> Self::Output { Self(!self.0) } }
+
+impl InodeFlags {
     pub fn level(self) -> u16 { (self.0 >> 48) as u16 }
     pub fn set_level(&mut self, level: u16) {
         self.0 &= !0 << 16 >> 16;
@@ -62,17 +85,17 @@ pub enum Kind {
 #[repr(C, align(128))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Inode {
-    pub id      : InodeId   ,
-    pub kind    : Kind      ,
-    pub flags   : KeInodeFlags     ,
-    pub size    : u64       ,
-    pub uid     : u16       ,
-    pub gid     : u16       ,
-    pub atime   : u64       ,
-    pub mtime   : u64       ,
-    pub ctime   : u64       ,
-    pub nlink   : u32       ,
-    pub private : [u8; 34]  ,
+    pub id      : InodeId       ,
+    pub kind    : Kind          ,
+    pub flags   : InodeFlags  ,
+    pub size    : u64           ,
+    pub uid     : u16           ,
+    pub gid     : u16           ,
+    pub atime   : u64           ,
+    pub mtime   : u64           ,
+    pub ctime   : u64           ,
+    pub nlink   : u32           ,
+    pub private : [u8; 34]      ,
 }
 
 impl Default for Inode {
@@ -80,7 +103,7 @@ impl Default for Inode {
         Self {
             id      : InodeId(0, 0)     ,
             kind    : Kind::Unknown     ,
-            flags   : KeInodeFlags::from_raw(0),
+            flags   : InodeFlags::from_raw(0),
             size    : 0                 ,
             uid     : 0                 ,
             gid     : 0                 ,
@@ -98,7 +121,7 @@ impl Inode {
         Self {
             id      : InodeId(0, 0)     ,
             kind    : Kind::Unknown     ,
-            flags   : KeInodeFlags::from_raw(0),
+            flags   : InodeFlags::from_raw(0),
             size    : 0                 ,
             uid     : 0                 ,
             gid     : 0                 ,
@@ -131,6 +154,16 @@ pub trait FileSystem: Send + Sync {
         buf     : &mut [u8]
     )   ->      Result<usize, FsError>
     ;
+    fn read_link(
+        &self   ,
+        file    : InodeId,
+        offset  : usize,
+        buf     : &mut [u8]
+    )   ->      Result<usize, FsError>
+    {
+        let _ = (file, offset, buf);
+        Err(FsError::Unknown)
+    }
     fn write(
         &self   ,
         file    : InodeId,
@@ -203,6 +236,8 @@ Import! {
 
     pub fn FsRead(mb: &MetaBlock, file: InodeId, offset: usize, buf: &mut [u8]) -> Result<usize, FsError> where kernel 0.1;
 
+    pub fn FsReadLink(mb: &MetaBlock, file: InodeId, offset: usize, buf: &mut [u8]) -> Result<usize, FsError> where kernel 0.1;
+
     pub fn FsWrite(mb: &MetaBlock, file: InodeId, offset: usize, buf: &[u8]) -> Result<usize, FsError> where kernel 0.1;
 
     pub fn FsTrunc(mb: &MetaBlock, file: InodeId, new_size: usize) -> Result<(), FsError> where kernel 0.1;
@@ -228,4 +263,6 @@ Import! {
     pub fn FsReadToString(mb: &MetaBlock, file: InodeId) -> Result<String, FsError> where kernel 0.1;
 
     pub fn FsMount(name: String, mb: u32) -> Option<InodeId> where kernel 0.1;
+
+    pub fn FsCanonicalize(path: &str) -> Result<String, FsError> where kernel 0.1;
 }
