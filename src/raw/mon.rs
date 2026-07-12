@@ -64,7 +64,7 @@ impl AttLvl
 
 Import!
 {
-    pub fn MonLog(level: AttLvl, module: StStr, file: StStr, line: u32, args: core::fmt::Arguments<'_>)
+    pub fn MonLog(level: AttLvl, module: &'static str, file: &'static str, line: u32, args: core::fmt::Arguments<'_>)
     where kernel 0.1;
 
     pub fn MonAddSink(sink: &'static mut dyn Sink)
