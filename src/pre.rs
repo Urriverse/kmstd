@@ -85,11 +85,13 @@ macro meta_sym( $k:ident: $t:ty => $v:expr )
     }
 }
 
-pub macro meta( mod $n:literal ) {
-    crate::raw::SYMBOL!
-    {
-        pub MODNAME: StStr = $n;
-    }
+pub macro meta( $( $k:ident: $t:ty => $v:expr ),* $(,)? ) {
+    $(
+        meta_sym!
+        {
+            $k: $t => $v
+        }
+    )*
 }
 
 pub(crate) macro insmod( $( $v:vis $n:ident $x:vis ),* $(,)? )
