@@ -78,7 +78,7 @@ macro meta_sym( $k:ident: $t:ty => $v:expr )
 {
     ketypes::paste!
     {
-        crate::raw::SYMBOL!
+        SYMBOL!
         {
             pub [< MODINF_ $k >]: $t = $v;
         }
