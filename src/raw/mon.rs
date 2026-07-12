@@ -3,18 +3,21 @@
 //! This module defines the logging severity levels ([`AttLvl`]), log sink traits,
 //! and raw bindings to emit log messages to the kernel's monitoring console.
 
-pub enum Format {
+pub enum Format
+{
     Pretty,
     Regular,
 }
 
-pub trait Sink: core::fmt::Write + Sync + Send {
+pub trait Sink: core::fmt::Write + Sync + Send
+{
     fn format(&self) -> Format;
 }
 
 #[derive(Clone, Copy)]
 #[repr(u8)]
-pub enum AttLvl {
+pub enum AttLvl
+{
     /// Unrecoverable error – system will panic or halt.
     Panic = 0,
     /// Recoverable error.
@@ -29,9 +32,12 @@ pub enum AttLvl {
     Trace = 5,
 }
 
-impl AttLvl {
-    pub fn as_str(self) -> &'static str {
-        match self {
+impl AttLvl
+{
+    pub fn as_str(self) -> StStr
+    {
+        match self
+        {
             Self::Panic => "PANIC",
             Self::Error => "ERROR",
             Self::Warn  => " WARN",
@@ -39,9 +45,11 @@ impl AttLvl {
             Self::Debug => "DEBUG",
             Self::Trace => "TRACE",
         }
+        .   into()
     }
 
-    pub fn pretty(self) -> &'static str {
+    pub fn pretty(self) -> StStr
+    {
         match self {
             Self::Panic => "\x1b[35;1mPANIC\x1b[0m",
             Self::Error => "\x1b[31;1mERROR\x1b[0m",
@@ -50,10 +58,15 @@ impl AttLvl {
             Self::Debug => "\x1b[36;1mDEBUG\x1b[0m",
             Self::Trace => "\x1b[90;1mTRACE\x1b[0m",
         }
+        .   into()
     }
 }
 
-Import! {
-    pub fn MonLog(level: AttLvl, module: &'static str, file: &'static str, line: u32, args: core::fmt::Arguments<'_>) where kernel 0.1;
-    pub fn MonAddSink(sink: &'static mut dyn Sink) where kernel 0.1;
+Import!
+{
+    pub fn MonLog(level: AttLvl, module: StStr, file: StStr, line: u32, args: core::fmt::Arguments<'_>)
+    where kernel 0.1;
+
+    pub fn MonAddSink(sink: &'static mut dyn Sink)
+    where kernel 0.1;
 }

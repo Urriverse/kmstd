@@ -14,7 +14,8 @@
 #![allow(internal_features)]
 #![allow(unused_features)]
 
-#![feature(
+#![feature
+(
     decl_macro                  ,
     core_io                     ,
     string_from_utf8_lossy_owned,
@@ -22,16 +23,24 @@
     doc_cfg                     ,
     custom_inner_attributes     ,
     proc_macro_hygiene          ,
+    thin_box                    ,
 )]
 
-#[allow(unused)] #[macro_use] extern crate alloc    ;
-#[allow(unused)] #[macro_use] extern crate ketypes  ;
+#[allow(unused)]
+#[macro_use]
+extern crate alloc;
+
+#[allow(unused)]
+#[macro_use]
+extern crate ketypes;
 
 #[macro_export]
-macro_rules! pre {
-    [] => {
+macro_rules! pre
+{
+    [] =>
+    {
         #[macro_use]
-        extern crate kstd as ___kstd;
+        extern crate kstd as __kstd;
         
         #[allow(unused_imports)]
         #[prelude_import]
@@ -45,6 +54,6 @@ pub mod pre;
 #[prelude_import]
 pub use pre::*;
 
-pub mod raw     ;
-pub mod rt      ;
-pub mod api     ;
+pub mod raw;
+pub mod rt;
+pub mod api;

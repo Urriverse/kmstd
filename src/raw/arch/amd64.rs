@@ -7,7 +7,8 @@
 /// A complete snapshot of the CPU state at the time of an interrupt, exception, or system call.
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
-pub struct TrapFrame {
+pub struct TrapFrame
+{
     /// RAX – general‑purpose register, often used as the syscall number and return value.
     pub rax: u64,
     /// RBX – general‑purpose register, saved but not used for syscalls.
@@ -60,7 +61,8 @@ pub struct TrapFrame {
 /// to specify the delivery semantics of the IPI.
 #[repr(u32)]
 #[derive(Debug, Clone, Copy)]
-pub enum DeliveryMode {
+pub enum DeliveryMode
+{
     /// Deliver the interrupt to the target processor(s).
     Fixed        = 0b000 << 8,
     /// Deliver to the processor with the lowest priority.
@@ -75,10 +77,12 @@ pub enum DeliveryMode {
     StartUp      = 0b110 << 8,
 }
 
-bitflags::bitflags! {
+bitflags::bitflags!
+{
     #[repr(transparent)]
     #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-    pub struct EntryFlags: u64 {
+    pub struct EntryFlags: u64
+    {
         /// The page is present in memory.
         const PRESENT         = 1 <<  0;
         /// The page is writable (for kernel mode, or user if `USER_ACCESSIBLE`).
@@ -117,121 +121,253 @@ bitflags::bitflags! {
 /// 
 /// Note: you MUST drop [`Vector`] after use as all tasks which wanna allocate
 /// new vector are waiting 'til you hold the [`Vector`].
-#[repr(C)] pub struct Vector(pub u8, usize);
+#[repr(C)]
+pub struct Vector
+(
+    pub u8, usize
+);
 
-bitflags::bitflags! {
+bitflags::bitflags!
+{
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct GsiRouteBits: u32 {
+    pub struct GsiRouteBits: u32
+    {
         const ACTIVE_LOW = 1 << 13;
         const LEVEL_TRIG = 1 << 15;
     }
 }
 
-impl Drop for Vector { fn drop(&mut self) { ReleaseVector(self); } }
+impl Drop for Vector
+{
+    fn drop(&mut self)
+    {
+        ReleaseVector(self);
+    }
+}
 
 #[doc(hidden)]
 #[inline(always)]
-fn rdpid_raw() -> usize {
+fn rdpid_raw() -> usize
+{
     let id: u64;
-    unsafe {
-        core::arch::asm! {
+
+    unsafe
+    {
+        core::arch::asm!
+        {
             "rdpid {}",
             out(reg) id,
             options(nostack, preserves_flags),
         }
     }
+
     id as usize
 }
 
 #[inline(always)]
-fn rdmsr(msr: u32) -> u64 {
+fn rdmsr(msr: u32) -> u64
+{
     let (lo, hi): (u32, u32);
-    unsafe {
-        core::arch::asm!(
+
+    unsafe
+    {
+        core::arch::asm!
+        {
             "rdmsr",
             in("ecx") msr,
             out("eax") lo,
             out("edx") hi,
             options(nostack, preserves_flags),
-        );
+        }
     }
+
     ((hi as u64) << 32) | (lo as u64)
 }
 
-#[inline(always)]fn   in8(port: u16) ->  u8  { unsafe { let rv:  u8; core::arch::asm! { "in {}, {:x}"  , out(reg_byte) rv, in(reg) port }; rv } }
-#[inline(always)]fn  in16(port: u16) -> u16  { unsafe { let rv: u16; core::arch::asm! { "in {:x}, {:x}", out(reg)      rv, in(reg) port }; rv } }
-#[inline(always)]fn  in32(port: u16) -> u32  { unsafe { let rv: u32; core::arch::asm! { "in {:l}, {:x}", out(reg)      rv, in(reg) port }; rv } }
+#[inline(always)]
+fn in8(port: u16) -> u8
+{
+    unsafe
+    {
+        let rv: u8;
+        
+        core::arch::asm!
+        {
+            "in {}, {:x}",
+            out(reg_byte) rv,
+            in(reg) port
+        };
+        
+        rv
+    }
+}
 
-#[inline(always)]fn  out8(port: u16, v:  u8) { unsafe { core::arch::asm! { "in {:x}, {}"  , in(reg) port, in(reg_byte) v } } }
-#[inline(always)]fn out16(port: u16, v: u16) { unsafe { core::arch::asm! { "in {:x}, {:x}", in(reg) port, in(reg)      v } } }
-#[inline(always)]fn out32(port: u16, v: u32) { unsafe { core::arch::asm! { "in {:x}, {:l}", in(reg) port, in(reg)      v } } }
+#[inline(always)]
+fn in16(port: u16) -> u16
+{
+    unsafe
+    {
+        let rv: u16;
+        
+        core::arch::asm!
+        {
+            "in {:x}, {:x}",
+            out(reg) rv,
+            in(reg) port
+        };
+        
+        rv
+    }
+}
+
+#[inline(always)]
+fn in32(port: u16) -> u32
+{
+    unsafe
+    {
+        let rv: u32;
+        
+        core::arch::asm!
+        {
+            "in {:l}, {:x}",
+            out(reg) rv,
+            in(reg) port
+        };
+        
+        rv
+    }
+}
+
+#[inline(always)]
+fn out8(port: u16, v: u8)
+{
+    unsafe
+    {
+        core::arch::asm!
+        {
+            "in {:x}, {}",
+            in(reg) port,
+            in(reg_byte) v
+        }
+    }
+}
+
+#[inline(always)]
+fn out16(port: u16, v: u16)
+{
+    unsafe
+    {
+        core::arch::asm!
+        {
+            "in {:x}, {:x}",
+            in(reg) port,
+            in(reg) v
+        }
+    }
+}
+
+#[inline(always)]
+fn out32(port: u16, v: u32)
+{
+    unsafe
+    {
+        core::arch::asm!
+        {
+            "in {:x}, {:l}",
+            in(reg) port,
+            in(reg) v
+        }
+    }
+}
 
 // Reads value from I/O port. `T` must be of size 1, 2, or 4 bytes.
 #[inline(always)]#[allow(non_snake_case)]
-pub unsafe fn PortRead<T: From<usize>>(port: u16) -> T {
-    match size_of::<T>() {
+pub unsafe fn PortRead<T: From<usize>>(port: u16) -> T
+{
+    match size_of::<T>()
+    {
         1 =>  in8(port) as usize,
         2 => in16(port) as usize,
         4 => in32(port) as usize,
         _ => panic!("Invalid type"),
-    }.into()
+    }
+    .   into()
 }
 
 // Writes value to I/O port. `T` must be of size 1, 2, or 4 bytes.
 #[inline(always)]#[allow(non_snake_case)]
-pub unsafe fn PortWrite<T: Into<usize>>(port: u16, v: T) {
-    match size_of::<T>() {
+pub unsafe fn PortWrite<T: Into<usize>>(port: u16, v: T)
+{
+    match size_of::<T>()
+    {
         1 =>  out8(port, v.into() as  u8),
         2 => out16(port, v.into() as u16),
         4 => out32(port, v.into() as u32),
         _ => panic!("Invalid type"),
-    }.into()
+    }
 }
 
 /// Returns current CPU unique identifier.
 #[inline(always)]#[allow(non_snake_case)]
-pub fn CurrentCpu() -> usize {
-    if ArchRdpidAvailable() {
+pub fn CurrentCpu() -> usize
+{
+    if ArchRdpidAvailable()
+    {
         rdpid_raw()
-    } else {
+    }
+    else
+    {
         rdmsr(3221225731) as usize
     }
 }
 
-Import! {
+Import!
+{
     /// Replaces current system call handler to your one.
     /// Returns [`None`] if current task isn't part of process.
-    pub fn ArchReplaceSyscallHandler as OnSystemCall(sh: fn(&mut TrapFrame)) -> Option<()> where kernel 0.1;
+    pub fn ArchReplaceSyscallHandler as OnSystemCall(sh: fn(&mut TrapFrame)) -> Option<()>
+    where kernel 0.1;
 
     /// Returns current uptime in milliseconds
-    pub fn ArchTimeFromBootNs as UptimeNs() -> u64 where kernel 0.1;
+    pub fn ArchTimeFromBootNs as UptimeNs() -> u64
+    where kernel 0.1;
 
     /// Returns current uptime in seconds
-    pub fn ArchTimeFromBoot as Uptime() -> f64 where kernel 0.1;
+    pub fn ArchTimeFromBoot as Uptime() -> f64
+    where kernel 0.1;
 
     /// Returns amount of CPUs detected by kernel/bootloader.
-    pub fn GtArchTotalCpus as TotalCpus() -> usize where kernel 0.1;
+    pub fn GtArchTotalCpus as TotalCpus() -> usize
+    where kernel 0.1;
 
     /// Sends End Of Interrupt to Local APIC.
-    pub fn ArchEndOfInterrupt as EndOfInterrupt() where kernel 0.1;
+    pub fn ArchEndOfInterrupt as EndOfInterrupt()
+    where kernel 0.1;
 
     /// Sends the IPI to the target APIC ID.
-    pub fn ArchSendIPI as SendIPI(target_cpu_id: u32, event_vector: u8, mode: DeliveryMode) where kernel 0.1;
+    pub fn ArchSendIPI as SendIPI(target_cpu_id: u32, event_vector: u8, mode: DeliveryMode)
+    where kernel 0.1;
 
     #[doc(hidden)]
-    fn ArchRdpidAvailable as ArchRdpidAvailable() -> bool where kernel 0.1;
+    fn ArchRdpidAvailable as ArchRdpidAvailable() -> bool
+    where kernel 0.1;
 
     /// Sets ISR on all CPUs.
-    pub fn ArchSetInterruptServiceRoutine as SetISR(vector: u8, routine: *const ()) where kernel 0.1;
+    pub fn ArchSetInterruptServiceRoutine as SetISR(vector: u8, routine: *const ())
+    where kernel 0.1;
 
     /// Removes ISR on all CPUs. Other modules/tasks can use this vector again.
-    pub fn ArchRemoveInterruptServiceRoutine as RemoveISR(vector: u8) where kernel 0.1;
+    pub fn ArchRemoveInterruptServiceRoutine as RemoveISR(vector: u8)
+    where kernel 0.1;
 
     /// Configures GSI route.
-    pub fn ArchRouteGsi as RouteGsi(gsi: u32, cpuid: usize, mask: bool, vector: u8, bits: GsiRouteBits) -> Result<(), ()> where kernel 0.1;
+    pub fn ArchRouteGsi as RouteGsi(gsi: u32, cpuid: usize, mask: bool, vector: u8, bits: GsiRouteBits) -> Result<(), ()>
+    where kernel 0.1;
 
     /// Allocates new vector for your ISR.
-    pub fn ArchAllocateVector as AllocateVector() -> Option<Vector> where kernel 0.1;
+    pub fn ArchAllocateVector as AllocateVector() -> Option<Vector>
+    where kernel 0.1;
 
-    fn ArchReleaseVector as ReleaseVector(v: &mut Vector) where kernel 0.1;
+    pub fn ArchReleaseVector as ReleaseVector(v: &mut Vector)
+    where kernel 0.1;
 }

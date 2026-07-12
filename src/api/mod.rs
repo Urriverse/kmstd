@@ -11,3 +11,27 @@ pub mod env     ;
 pub mod task    ;
 
 pub use crate::raw;
+pub use core::
+{
+    io,
+    result,
+    fmt,
+    range,
+    ops,
+    option,
+    panic,
+    any,
+    array,
+    ascii,
+    slice,
+    str,
+    hash,
+    hint,
+    cell,
+    cmp,
+    borrow,
+    num,
+    marker,
+    mem,
+    ptr
+};
