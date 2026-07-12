@@ -76,7 +76,7 @@ pub macro println {
 
 macro meta_sym( $k:ident: $t:ty => $v:expr )
 {
-    paste!
+    ketypes::paste!
     {
         crate::raw::SYMBOL!
         {
